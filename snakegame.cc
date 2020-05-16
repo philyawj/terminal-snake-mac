@@ -14,6 +14,10 @@ enum eDirection
 };
 eDirection dir;
 
+// can have up to 100 tail sections
+int TailX[100], TailY[100];
+int nTail = 0;
+
 void Setup()
 {
 
@@ -52,6 +56,12 @@ void Draw()
                 mvprintw(i, j, "O");
             else if (i == FruitY && j == FruitX)
                 mvprintw(i, j, "@");
+            else
+                for (int k = 0; k < nTail; k++)
+                {
+                    if (TailX[k] == j && TailY[k] == i)
+                        mvprintw(i, j, "o");
+                }
         }
     }
 
@@ -92,6 +102,24 @@ void Input()
 
 void Logic()
 {
+
+    // tail
+    int prevX = TailX[0];
+    int prevY = TailY[0];
+    int prev2X, prev2Y;
+    TailX[0] = x;
+    TailY[0] = y;
+
+    for (int i = 1; i < nTail; i++)
+    {
+        prev2X = TailX[i];
+        prev2Y = TailY[i];
+        TailX[i] = prevX;
+        TailY[i] = prevY;
+        prevX = prev2X;
+        prevY = prev2Y;
+    }
+
     // move snake head from key changes
     switch (dir)
     {
@@ -121,7 +149,15 @@ void Logic()
         score++;
         FruitX = (rand() % width) + 1;
         FruitY = (rand() % height) + 1;
+        nTail++;
     }
+
+    // end if head hits tail
+    for (int i = 0; i < nTail; i++)
+        if (TailX[i] == x && TailY[i] == y)
+        {
+            gameOver = true;
+        }
 }
 
 int main()
