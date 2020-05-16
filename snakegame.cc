@@ -58,31 +58,86 @@ void Draw()
     mvprintw(23, 0, "Score %d", score);
 
     refresh();
-
-    getch();
-    endwin();
 }
 
 void Input()
 {
+
+    // what key changes mean for snake head
+    keypad(stdscr, TRUE);
+    halfdelay(1);
+
+    int c = getch();
+
+    switch (c)
+    {
+    case KEY_LEFT:
+        dir = LEFT;
+        break;
+    case KEY_RIGHT:
+        dir = RIGHT;
+        break;
+    case KEY_UP:
+        dir = UP;
+        break;
+    case KEY_DOWN:
+        dir = DOWN;
+        break;
+    // q key
+    case 113:
+        gameOver = true;
+        break;
+    }
 }
 
 void Logic()
 {
+    // move snake head from key changes
+    switch (dir)
+    {
+    case LEFT:
+        x--;
+        break;
+    case RIGHT:
+        x++;
+        break;
+    case UP:
+        y--;
+        break;
+    case DOWN:
+        y++;
+        break;
+    default:
+        break;
+    }
+
+    // gameover if you hit the game border
+    if (x > width || x < 1 || y < 1 || y > height)
+        gameOver = true;
+
+    // when snake eats fruit
+    if (x == FruitX && y == FruitY)
+    {
+        score++;
+        FruitX = (rand() % width) + 1;
+        FruitY = (rand() % height) + 1;
+    }
 }
 
 int main()
 {
 
     Setup();
-    Draw();
 
-    // while (!gameOver)
-    // {
-    //     Draw();
-    //     Input();
-    //     Logic();
-    // }
+    while (!gameOver)
+    {
+        Draw();
+        Input();
+        Logic();
+    }
+
+    getch();
+    endwin();
 
     return 0;
 }
